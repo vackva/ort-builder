@@ -1,6 +1,6 @@
 setlocal
 @echo off
-@set "CMAKE_BUILD_TYPE=%2"
+@set "CMAKE_BUILD_TYPE=%1"
 @if "%CMAKE_BUILD_TYPE%"=="" (
 	@set "CMAKE_BUILD_TYPE=MinSizeRel"
 )
