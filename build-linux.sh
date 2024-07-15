@@ -1,5 +1,5 @@
 #!/bin/bash
-CMAKE_BUILD_TYPE=MinSizeRel
+CMAKE_BUILD_TYPE=Debug
 
 build_arch() {
   ARCH="$1"
