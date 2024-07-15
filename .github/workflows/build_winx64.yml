@@ -1,0 +1,77 @@
+name: Build ONNX Runtime Static Library for Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      PYTHON_VERSION: '3.10'
+
+    steps:
+      - name: Checkout repository
+        run: |
+          git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/vackva/ort-builder.git .
+        
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv venv
+          venv\Scripts\activate
+
+      - name: Install dependencies
+        run: |
+          venv\Scripts\pip install -r requirements.txt
+
+      - name: Build ONNX Runtime for Windows (Debug & MinSizeRel)
+        run: |
+          # Apply patch to disable LTO/LTCG if necessary
+          git apply ltcg_patch_for_windows.patch || echo "Patch not applied"
+
+          ./build-win.sh
+
+      - name: Prepare artifact for MinSizeRel
+        run: |
+          mkdir -p artifacts/MinSizeRel/include
+          cp -r onnxruntime/include/* artifacts/MinSizeRel/include/
+          cp libs/win-x86_64/MinSizeRel/onnxruntime.lib artifacts/MinSizeRel/
+
+      - name: Prepare artifact for Debug
+        run: |
+          mkdir -p artifacts/Debug/include
+          cp -r onnxruntime/include/* artifacts/Debug/include/
+          cp libs/win-x86_64/Debug/onnxruntime.lib artifacts/Debug/
+
+      - name: Upload ONNX Runtime library artifact (MinSizeRel)
+        uses: actions/upload-artifact@v2
+        with:
+          name: onnxruntime-lib-MinSizeRel
+          path: artifacts/MinSizeRel
+
+      - name: Upload ONNX Runtime library artifact (Debug)
+        uses: actions/upload-artifact@v2
+        with:
+          name: onnxruntime-lib-Debug
+          path: artifacts/Debug
+
+      - name: Upload complete build files (MinSizeRel)
+        uses: actions/upload-artifact@v2
+        with:
+          name: complete-build-MinSizeRel
+          path: libs/win-x86_64/MinSizeRel
+
+      - name: Upload complete build files (Debug)
+        uses: actions/upload-artifact@v2
+        with:
+          name: complete-build-Debug
+          path: libs/win-x86_64/Debug
