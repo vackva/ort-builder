@@ -45,10 +45,18 @@ jobs:
           git apply ../ltcg_patch_for_windows.patch || echo "Patch not applied"
           cd ..
 
-      - name: Build ONNX Runtime for Windows (Debug & MinSizeRel)
+      - name: Build ONNX Runtime for Windows (MinSizeRel)
         run: |
           # Build the static library
-          ./build-win.sh
+          set -euf -o pipefail
+          ./build-win.bat MinSizeRel  
+        shell: bash
+
+      - name: Build ONNX Runtime for Windows (Debug)
+        run: |
+          # Build the static library
+          set -euf -o pipefail
+          ./build-win.bat Debug  
         shell: bash
 
       - name: Prepare artifact for MinSizeRel
