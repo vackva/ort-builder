@@ -13,7 +13,8 @@ jobs:
     runs-on: windows-latest
     env:
       PYTHON_VERSION: '3.10'
-
+      ONNX_RUNTIME_VERSION: '1.16.3'
+    
     steps:
       - name: Checkout repository
         run: |
@@ -62,13 +63,13 @@ jobs:
       - name: Prepare artifact for MinSizeRel
         run: |
           mkdir -p artifacts/MinSizeRel/include
-          cp -r onnxruntime/include/* artifacts/MinSizeRel/include/
+          cp -r include/* artifacts/MinSizeRel/include/
           cp libs/win-x86_64/MinSizeRel/onnxruntime.lib artifacts/MinSizeRel/
 
       - name: Prepare artifact for Debug
         run: |
           mkdir -p artifacts/Debug/include
-          cp -r onnxruntime/include/* artifacts/Debug/include/
+          cp -r include/* artifacts/Debug/include/
           cp libs/win-x86_64/Debug/onnxruntime.lib artifacts/Debug/
 
       - name: Upload ONNX Runtime library artifact (MinSizeRel)
@@ -82,15 +83,3 @@ jobs:
         with:
           name: onnxruntime-lib-Debug
           path: artifacts/Debug
-
-      - name: Upload complete build files (MinSizeRel)
-        uses: actions/upload-artifact@v2
-        with:
-          name: complete-build-MinSizeRel
-          path: libs/win-x86_64/MinSizeRel
-
-      - name: Upload complete build files (Debug)
-        uses: actions/upload-artifact@v2
-        with:
-          name: complete-build-Debug
-          path: libs/win-x86_64/Debug
