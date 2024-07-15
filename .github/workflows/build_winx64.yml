@@ -42,11 +42,7 @@ jobs:
       - name: Apply patch to disable LTO/LTCG (if present)
         run: |
           cd onnxruntime
-          if [ -f ../ltcg_patch_for_windows.patch ]; then
-            git apply ../ltcg_patch_for_windows.patch || echo "Patch not applied"
-          else
-            echo "Patch file not found, skipping..."
-          fi
+          git apply ../ltcg_patch_for_windows.patch || echo "Patch not applied"
           cd ..
 
       - name: Prepare artifact for MinSizeRel
