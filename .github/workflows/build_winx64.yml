@@ -17,8 +17,14 @@ jobs:
     steps:
       - name: Checkout repository
         run: |
-          git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/vackva/ort-builder.git .
-        
+          git clone https://github.com/vackva/ort-builder.git .
+
+      - name: Switch submodule to HTTPS
+        run: |
+          git config --file=.gitmodules submodule.onnxruntime.url https://github.com/microsoft/onnxruntime.git
+          git submodule sync
+          git submodule update --init --recursive  
+          
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
