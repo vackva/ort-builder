@@ -39,12 +39,15 @@ jobs:
         run: |
           venv\Scripts\pip install -r requirements.txt
 
-      - name: Build ONNX Runtime for Windows (Debug & MinSizeRel)
+      - name: Apply patch to disable LTO/LTCG (if present)
         run: |
-          # Apply patch to disable LTO/LTCG if necessary
-          git apply ltcg_patch_for_windows.patch || echo "Patch not applied"
-
-          ./build-win.sh
+          cd onnxruntime
+          if [ -f ../ltcg_patch_for_windows.patch ]; then
+            git apply ../ltcg_patch_for_windows.patch || echo "Patch not applied"
+          else
+            echo "Patch file not found, skipping..."
+          fi
+          cd ..
 
       - name: Prepare artifact for MinSizeRel
         run: |
