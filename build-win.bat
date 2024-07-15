@@ -1,9 +1,5 @@
 setlocal
 @echo off
-@set "ONNX_CONFIG=%1"
-@if "%ONNX_CONFIG%"=="" (
-	@set "ONNX_CONFIG=model.required_operators_and_types.config"
-)
 @set "CMAKE_BUILD_TYPE=%2"
 @if "%CMAKE_BUILD_TYPE%"=="" (
 	@set "CMAKE_BUILD_TYPE=MinSizeRel"
@@ -29,8 +25,6 @@ call onnxruntime\build.bat ^
 --parallel ^
 --minimal_build ^
 --disable_ml_ops --disable_rtti ^
---include_ops_by_config "%ONNX_CONFIG%" ^
---enable_reduced_operator_type_support ^
 --enable_msvc_static_runtime ^
 --skip_tests ^
 	|| exit \b
