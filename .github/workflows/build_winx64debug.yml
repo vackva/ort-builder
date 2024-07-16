@@ -1,4 +1,4 @@
-name: Build ONNX Runtime Static Library for Linux
+name: Build ONNX Runtime Static Library for Windows
 
 on:
   push:
@@ -9,11 +9,11 @@ on:
       - main
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
     env:
       PYTHON_VERSION: '3.10'
-      ONNX_RUNTIME_VERSION: '1.16.3'
+      ONNXRT_FOLDER: 'onnxruntime-1.16.3'
     
     steps:
       - name: Checkout repository
@@ -24,8 +24,11 @@ jobs:
         run: |
           git config --file=.gitmodules submodule.onnxruntime.url https://github.com/microsoft/onnxruntime.git
           git submodule sync
-          git submodule update --init --recursive  
-          
+          git submodule update --init --recursive
+
+      - name: Set up Visual Studio
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -34,32 +37,22 @@ jobs:
       - name: Create and activate virtual environment
         run: |
           python -m venv venv
-          source venv/bin/activate
+          venv\Scripts\activate
 
       - name: Install dependencies
         run: |
-          venv/bin/pip install -r requirements.txt
+          venv\Scripts\pip install -r requirements.txt
 
-      - name: Install build tools and dependencies
+      - name: Build ONNX Runtime for Windows (Debug)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-
-      - name: Make build script executable
-        run: |
-          chmod +x ./build-linux.sh
-
-      - name: Build ONNX Runtime for Linux (Debug)
-        run: |
-          # Build the static library
-          ./build-linux.sh Debug  
-        shell: bash
+          ./build-win_debug.bat %ONNXRT_FOLDER%  
+        shell: cmd
 
       - name: Prepare artifact for Debug
         run: |
           mkdir -p artifacts/Debug/include
           cp -r include/* artifacts/Debug/include/
-          cp libs/linux-x86_64/Debug/onnxruntime.a artifacts/Debug/
+          cp libs/win-x86_64/Debug/onnxruntime.lib artifacts/Debug/
 
       - name: Upload ONNX Runtime library artifact (Debug)
         uses: actions/upload-artifact@v2

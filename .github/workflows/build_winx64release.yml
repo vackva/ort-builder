@@ -53,33 +53,14 @@ jobs:
           ./build-win.bat MinSizeRel  
         shell: bash
 
-      - name: Build ONNX Runtime for Windows (Debug)
-        run: |
-          # Build the static library
-          set -euf -o pipefail
-          ./build-win.bat Debug  
-        shell: bash
-
       - name: Prepare artifact for MinSizeRel
         run: |
           mkdir -p artifacts/MinSizeRel/include
           cp -r include/* artifacts/MinSizeRel/include/
           cp libs/win-x86_64/MinSizeRel/onnxruntime.lib artifacts/MinSizeRel/
 
-      - name: Prepare artifact for Debug
-        run: |
-          mkdir -p artifacts/Debug/include
-          cp -r include/* artifacts/Debug/include/
-          cp libs/win-x86_64/Debug/onnxruntime.lib artifacts/Debug/
-
       - name: Upload ONNX Runtime library artifact (MinSizeRel)
         uses: actions/upload-artifact@v2
         with:
           name: onnxruntime-lib-MinSizeRel
           path: artifacts/MinSizeRel
-
-      - name: Upload ONNX Runtime library artifact (Debug)
-        uses: actions/upload-artifact@v2
-        with:
-          name: onnxruntime-lib-Debug
-          path: artifacts/Debug
