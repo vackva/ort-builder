@@ -45,8 +45,9 @@ jobs:
 
       - name: Build ONNX Runtime for Windows (Debug)
         run: |
+          set -euf -o pipefail
           ./build-win_debug.bat %ONNXRT_FOLDER%  
-        shell: cmd
+        shell: bash
 
       - name: Prepare artifact for Debug
         run: |
